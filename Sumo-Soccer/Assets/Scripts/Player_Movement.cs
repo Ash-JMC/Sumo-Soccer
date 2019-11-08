@@ -9,11 +9,14 @@ public class Player_Movement : MonoBehaviour
     public Vector3 movement;
 
     private Rigidbody rb;
-    private float nextBoost;
-
+    private float nextBoost, trailLife;
+    private TrailRenderer tr;
+    
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        tr = GetComponent<TrailRenderer>();
+        trailLife = 0f;
         Move();
     }
 
@@ -34,10 +37,17 @@ public class Player_Movement : MonoBehaviour
         float z = Input.GetAxis("Z_" + playerNum);
         movement = Vector3.ClampMagnitude(new Vector3(x, 0, z) * moveSpeed, moveSpeed);
 
+
         if (Input.GetButton("Charge_" + playerNum) && Time.time >= nextBoost)
         {
             nextBoost = Time.time + boostCD;
             rb.AddForce(transform.forward * boostSpeed, ForceMode.Impulse);
+            trailLife = 0.3f;
+        }
+        if (trailLife > 0f)
+        {
+            tr.time = trailLife;
+            trailLife = Mathf.Clamp(trailLife - Time.deltaTime * .75f, 0f, trailLife);
         }
     }
     private void Move()
