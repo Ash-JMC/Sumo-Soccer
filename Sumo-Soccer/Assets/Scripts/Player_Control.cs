@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player_Movement : MonoBehaviour
+public class Player_Control : MonoBehaviour
 {
     public int playerNum;
     public float moveSpeed, rotateSpeed, boostSpeed, boostCD, baseMass;
     public Vector3 movement;
+    public MeshRenderer body;
 
     private Rigidbody rb;
     private float nextBoost, trailLife;
@@ -17,6 +18,7 @@ public class Player_Movement : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         tr = GetComponent<TrailRenderer>();
         trailLife = 0f;
+
         Move();
     }
 
