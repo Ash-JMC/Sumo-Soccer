@@ -8,6 +8,7 @@ public class Player_Control : MonoBehaviour
     public float moveSpeed, rotateSpeed, boostSpeed, boostCD, baseMass;
     public Vector3 movement;
     public MeshRenderer body;
+    public ParticleSystem sweatyCD;
 
     private Rigidbody rb;
     private float nextBoost, trailLife;
@@ -17,6 +18,8 @@ public class Player_Control : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         tr = GetComponent<TrailRenderer>();
+        ParticleSystem.MainModule psMain = sweatyCD.main;
+        psMain.duration = boostCD * 0.75f;
         trailLife = 0f;
 
         Move();
@@ -45,11 +48,17 @@ public class Player_Control : MonoBehaviour
             nextBoost = Time.time + boostCD;
             rb.AddForce(transform.forward * boostSpeed, ForceMode.Impulse);
             trailLife = 0.3f;
+            sweatyCD.gameObject.SetActive(true);
         }
         if (trailLife > 0f)
         {
             tr.time = trailLife;
             trailLife = Mathf.Clamp(trailLife - Time.deltaTime * .75f, 0f, trailLife);
+            
+        }
+        else if (Time.time >= nextBoost && sweatyCD.gameObject.activeSelf)
+        {
+            sweatyCD.gameObject.SetActive(false);
         }
     }
     private void Move()
