@@ -5137,10 +5137,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerNum: 0
-  moveSpeed: 100
+  moveSpeed: 85
   rotateSpeed: 350
   boostSpeed: 50
-  boostCD: 2
+  boostCD: 1.5
   baseMass: 2
   movement: {x: 0, y: 0, z: 0}
   body: {fileID: 3799264100110970631}
