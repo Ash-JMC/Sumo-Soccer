@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 public class ArenaMaster : MonoBehaviour
 {
     public int playerCount;
-    public GameObject defaultPlayer, defaultBall;
+    public GameObject defaultPlayer, defaultBall, activeBall;
     public GameObject[] Players;
 
     public int score_Left, score_Right, roundCount;
@@ -64,9 +64,23 @@ public class ArenaMaster : MonoBehaviour
         }
         //LOAD BALL
         GameObject newBall = Instantiate(defaultBall, spawn_Balls.position, spawn_Balls.rotation, agentSpace);
+        activeBall = newBall;
 
 
     }
 
+    public void Scored(bool leftTeam)
+    {
+        if(leftTeam)
+        {
+            score_Left++;
+            print(score_Left);
+        }
+        else
+        {
+            score_Right++;
+            print(score_Right);
+        }
+    }
     
 }
