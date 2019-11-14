@@ -10,6 +10,11 @@ public class Player_Control : MonoBehaviour
     public MeshRenderer body;
     public ParticleSystem sweatyCD;
 
+    [HideInInspector]
+    public bool freeze = true, leftTeam;
+    [HideInInspector]
+    public ArenaMaster AM;
+
     private Rigidbody rb;
     private float nextBoost, trailLife;
     private TrailRenderer tr;
@@ -22,17 +27,18 @@ public class Player_Control : MonoBehaviour
         psMain.duration = boostCD * 0.75f;
         trailLife = 0f;
 
-        Move();
+        
     }
 
     void Update()
     {
-        GetInput();
+        if(!freeze) { GetInput();}
+        
     }
 
     void FixedUpdate()
     {
-        Move();
+        if (!freeze) { Move(); }
     }
 
 
@@ -72,5 +78,12 @@ public class Player_Control : MonoBehaviour
             transform.rotation = lookRot;
         }
         
+    }
+    void OnTriggerEnter(Collider col)
+    {
+        if(col.gameObject.tag == "OutZone")
+        {
+            AM.Scored(!leftTeam);
+        }
     }
 }
