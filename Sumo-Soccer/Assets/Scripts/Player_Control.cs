@@ -11,7 +11,7 @@ public class Player_Control : MonoBehaviour
     public ParticleSystem sweatyCD;
 
     [HideInInspector]
-    public bool freeze = true, leftTeam;
+    public bool freeze = true, leftTeam, charging = false;
     [HideInInspector]
     public ArenaMaster AM;
 
@@ -55,6 +55,7 @@ public class Player_Control : MonoBehaviour
             rb.AddForce(transform.forward * boostSpeed, ForceMode.Impulse);
             trailLife = 0.3f;
             sweatyCD.gameObject.SetActive(true);
+            charging = true;
         }
         if (trailLife > 0f)
         {
@@ -65,6 +66,7 @@ public class Player_Control : MonoBehaviour
         else if (Time.time >= nextBoost && sweatyCD.gameObject.activeSelf)
         {
             sweatyCD.gameObject.SetActive(false);
+            charging = false;
         }
     }
     private void Move()
@@ -84,6 +86,29 @@ public class Player_Control : MonoBehaviour
         if(col.gameObject.tag == "OutZone")
         {
             AM.Scored(!leftTeam);
+        }
+    }
+    void OnCollisionEnter(Collision col)
+    {
+        if(col.collider.tag == "Player")
+        {
+            Player_Control PC = col.gameObject.GetComponent<Player_Control>();
+            if (PC.leftTeam != leftTeam)
+            {
+                print("Hit an enemy!");
+                if(charging && !PC.charging)
+                {
+                    //Is this fun?
+                    charging = false;
+                    print("pow!");
+                    Rigidbody enemyRB = col.collider.gameObject.GetComponent<Rigidbody>();
+                    enemyRB.AddForce(transform.forward*50, ForceMode.VelocityChange);
+                }
+            }
+            else
+            {
+                print("Hit a bro!");
+            }
         }
     }
 }

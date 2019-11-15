@@ -83,6 +83,7 @@ public class ArenaMaster : MonoBehaviour
             }
             GameObject newPlayer = Instantiate(defaultPlayer, spawn_Players[i].position, spawn_Players[i].rotation, agentSpace);
             Player_Control PC = newPlayer.GetComponent<Player_Control>();
+            newPlayer.transform.localScale = new Vector3(1.25f, 1, 1.25f);
             newPlayer.name = team+"Player_" + i;
             PC.body.material.color = playerCol;
             PC.playerNum = i + 1;
@@ -92,6 +93,7 @@ public class ArenaMaster : MonoBehaviour
             Players[i] = newPlayer;
         }
         activeBall = Instantiate(defaultBall, spawn_Balls.position, spawn_Balls.rotation, agentSpace);
+        activeBall.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
     }
 
     public void Scored(bool leftTeam)
