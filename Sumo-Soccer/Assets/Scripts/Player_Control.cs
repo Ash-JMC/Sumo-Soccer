@@ -68,6 +68,11 @@ public class Player_Control : MonoBehaviour
             sweatyCD.gameObject.SetActive(false);
             charging = false;
         }
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            AM.Pause();
+        }
+
     }
     private void Move()
     {

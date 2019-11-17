@@ -17,6 +17,7 @@ public class ArenaMaster : MonoBehaviour
     public Color colour_Left, colour_Right;
     public Text UI_score_Left, UI_score_Right, UI_Countdown;
     public Goals goal_Left, goal_Right;
+    public GameObject pauseMenu;
 
     void Start()
     {
@@ -43,6 +44,7 @@ public class ArenaMaster : MonoBehaviour
 
     public void Reload(bool newGame)
     {
+        Time.timeScale = 1;
         SceneManager.LoadScene("SS_Arena");
     }
     public void NextRound()
@@ -127,6 +129,16 @@ public class ArenaMaster : MonoBehaviour
         UI_Countdown.transform.parent.gameObject.SetActive(false);
         goal_Left.scored = false;
         goal_Right.scored = false;
+    }
+    public void Pause()
+    {
+        pauseMenu.SetActive(true);
+        Time.timeScale = 0;
+    }
+    public void UnPause()
+    {
+        pauseMenu.SetActive(false);
+        Time.timeScale = 1;
     }
     
 }
