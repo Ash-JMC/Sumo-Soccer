@@ -28,7 +28,13 @@ public class Goals : MonoBehaviour
         {
             AM.Scored(leftTeam);
             scored = true;
-            confetti.Play();
+            //Confetti(confettiColor);
         }
+    }
+    public void Confetti(Color goalColour)
+    {
+        var confettiMain = confetti.main;
+        confettiMain.startColor = goalColour;
+        confetti.Play();
     }
 }

@@ -26,7 +26,14 @@ public class Player_Control : MonoBehaviour
         ParticleSystem.MainModule psMain = sweatyCD.main;
         psMain.duration = boostCD * 0.75f;
         trailLife = 0f;
-
+        if(playerNum == 3 || playerNum == 4)
+        {
+            Color newCol = body.material.color;
+            newCol.r += 0.25f;
+            newCol.g += 0.25f;
+            newCol.b += 0.25f;
+            body.material.color = newCol;
+        }
         
     }
 
@@ -100,14 +107,13 @@ public class Player_Control : MonoBehaviour
             Player_Control PC = col.gameObject.GetComponent<Player_Control>();
             if (PC.leftTeam != leftTeam)
             {
-                print("Hit an enemy!");
                 if(charging && !PC.charging)
                 {
                     //Is this fun?
+                    float vel = rb.velocity.magnitude*(rb.mass/2);
                     charging = false;
-                    print("pow!");
                     Rigidbody enemyRB = col.collider.gameObject.GetComponent<Rigidbody>();
-                    enemyRB.AddForce(transform.forward*50, ForceMode.VelocityChange);
+                    enemyRB.AddForce(transform.forward * vel, ForceMode.Impulse);
                 }
             }
             else

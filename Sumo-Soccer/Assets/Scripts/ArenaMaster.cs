@@ -9,15 +9,18 @@ public class ArenaMaster : MonoBehaviour
 {
     public int playerCount;
     public GameObject defaultPlayer, defaultBall, activeBall;
-    public GameObject[] Players;
+    public GameObject[] Players, Goalz;
 
     public int score_Left, score_Right, roundCount;
     public Transform[] spawn_Players;
     public Transform spawn_Balls, agentSpace;
     public Color colour_Left, colour_Right;
-    public Text UI_score_Left, UI_score_Right, UI_Countdown;
+    public Text UI_score_Left, UI_score_Right, UI_Countdown, UI_winText;
     public Goals goal_Left, goal_Right;
-    public GameObject pauseMenu;
+    public GameObject pauseMenu, winMenu;
+    public Pickup[] Pickups;
+
+    private bool gameOver = false;
 
     void Start()
     {
@@ -41,7 +44,6 @@ public class ArenaMaster : MonoBehaviour
             Reload(true);
         }
     }  
-
     public void Reload(bool newGame)
     {
         Time.timeScale = 1;
@@ -97,25 +99,61 @@ public class ArenaMaster : MonoBehaviour
         activeBall = Instantiate(defaultBall, spawn_Balls.position, spawn_Balls.rotation, agentSpace);
         activeBall.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
     }
-
     public void Scored(bool leftTeam)
     {
         if(leftTeam)
         {
             score_Left++;
             UI_score_Left.text = "SCORE:   " + score_Left;
+            Goalz[1].GetComponent<Goals>().Confetti(colour_Left);
+            if(score_Left >= 3 && !gameOver)
+            {
+                winMenu.SetActive(true);
+                UI_winText.text = "LEFT";
+                UI_winText.color = colour_Left;
+                gameOver = true;
+                foreach(GameObject goal in Goalz)
+                {
+                    Goals GS = goal.GetComponent<Goals>();
+                    GS.Confetti(colour_Left);
+                }
+                FreezePlayers();
+            }
         }
         else
         {
             score_Right++;
             UI_score_Right.text = "SCORE:   " + score_Right;
+            Goalz[0].GetComponent<Goals>().Confetti(colour_Right);
+            if (score_Right >= 3 && !gameOver)
+            {
+                winMenu.SetActive(true);
+                UI_winText.text = "RIGHT";
+                UI_winText.color = colour_Right;
+                gameOver = true;
+                foreach (GameObject goal in Goalz)
+                {
+                    Goals GS = goal.GetComponent<Goals>();
+                    GS.Confetti(colour_Right);
+                }
+                FreezePlayers();
+            }
         }
-        NextRound();
+        if(!gameOver)
+        {
+            NextRound();
+        }
+        
     }
-
     IEnumerator Countdown()
     {
         UI_Countdown.transform.parent.gameObject.SetActive(true);
+        foreach (Pickup PU in Pickups)
+        {
+            PU.active = false;
+            PU.timer = Time.time + PU.interval + 3;
+            PU.Pickups[PU.activePickup].SetActive(false);
+        }
         for (int timer = 3; timer > 0; timer--)
         {
             UI_Countdown.text = (timer).ToString();
@@ -126,6 +164,7 @@ public class ArenaMaster : MonoBehaviour
         {
             PC.GetComponent<Player_Control>().freeze = false;
         }
+        
         UI_Countdown.transform.parent.gameObject.SetActive(false);
         goal_Left.scored = false;
         goal_Right.scored = false;
@@ -140,5 +179,21 @@ public class ArenaMaster : MonoBehaviour
         pauseMenu.SetActive(false);
         Time.timeScale = 1;
     }
-    
+    public void FreezePlayers()
+    {
+        foreach(GameObject player in Players)
+        {
+            Player_Control PC = player.GetComponent<Player_Control>();
+            PC.freeze = true;
+        }
+    }
+    public void UnFreezePlayers()
+    {
+        foreach (GameObject player in Players)
+        {
+            Player_Control PC = player.GetComponent<Player_Control>();
+            PC.freeze = false;
+        }
+    }
+
 }
