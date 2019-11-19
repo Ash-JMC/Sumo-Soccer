@@ -9,6 +9,7 @@ public class Player_Control : MonoBehaviour
     public Vector3 movement;
     public MeshRenderer body;
     public ParticleSystem sweatyCD;
+    public GameObject impactFX;
 
     [HideInInspector]
     public bool freeze = true, leftTeam, charging = false;
@@ -58,6 +59,7 @@ public class Player_Control : MonoBehaviour
 
         if (Input.GetButton("Charge_" + playerNum) && Time.time >= nextBoost)
         {
+            impactFX.SetActive(false);
             nextBoost = Time.time + boostCD;
             rb.AddForce(transform.forward * boostSpeed, ForceMode.Impulse);
             trailLife = 0.3f;
@@ -114,6 +116,7 @@ public class Player_Control : MonoBehaviour
                     charging = false;
                     Rigidbody enemyRB = col.collider.gameObject.GetComponent<Rigidbody>();
                     enemyRB.AddForce(transform.forward * vel, ForceMode.Impulse);
+                    impactFX.SetActive(true);
                 }
             }
             else
