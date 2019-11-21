@@ -7,9 +7,10 @@ public class Player_Control : MonoBehaviour
     public int playerNum;
     public float moveSpeed, rotateSpeed, boostSpeed, boostCD, baseMass;
     public Vector3 movement;
-    public MeshRenderer body;
+    public Renderer body;
     public ParticleSystem sweatyCD;
     public GameObject impactFX;
+    public Animator AC;
 
     [HideInInspector]
     public bool freeze = true, leftTeam, charging = false;
@@ -41,7 +42,9 @@ public class Player_Control : MonoBehaviour
     void Update()
     {
         if(!freeze) { GetInput();}
-        
+        else AC.SetFloat("Speed", 0);
+
+
     }
 
     void FixedUpdate()
@@ -61,10 +64,12 @@ public class Player_Control : MonoBehaviour
         {
             impactFX.SetActive(false);
             nextBoost = Time.time + boostCD;
-            rb.AddForce(transform.forward * boostSpeed, ForceMode.Impulse);
+            rb.AddForce(transform.forward * (boostSpeed * (rb.mass / 2)), ForceMode.Impulse);
             trailLife = 0.3f;
             sweatyCD.gameObject.SetActive(true);
             charging = true;
+            AC.SetTrigger("Charge");
+           // AC.ResetTrigger("Charge");
         }
         if (trailLife > 0f)
         {
@@ -81,6 +86,7 @@ public class Player_Control : MonoBehaviour
         {
             AM.Pause();
         }
+        AC.SetFloat("Speed", movement.magnitude);
 
     }
     private void Move()
@@ -117,6 +123,7 @@ public class Player_Control : MonoBehaviour
                     Rigidbody enemyRB = col.collider.gameObject.GetComponent<Rigidbody>();
                     enemyRB.AddForce(transform.forward * vel, ForceMode.Impulse);
                     impactFX.SetActive(true);
+                    PC.Slammed();
                 }
             }
             else
@@ -124,5 +131,10 @@ public class Player_Control : MonoBehaviour
                 print("Hit a bro!");
             }
         }
+    }
+    public void Slammed()
+    {
+        AC.SetTrigger("Slammed");
+        //AC.ResetTrigger("Slammed");
     }
 }
