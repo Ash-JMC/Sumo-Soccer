@@ -18,7 +18,7 @@ public class Player_Control : MonoBehaviour
     public ArenaMaster AM;
 
     private Rigidbody rb;
-    private float nextBoost, trailLife;
+    private float nextBoost, trailLife, x, z, _LT, _RT;
     private TrailRenderer tr;
     
     void Start()
@@ -55,12 +55,16 @@ public class Player_Control : MonoBehaviour
 
     private void GetInput()
     {
-        float x = Input.GetAxis("X_" + playerNum);
-        float z = Input.GetAxis("Z_" + playerNum);
+        //int inputNum = playerNum + 1;
+        x = Input.GetAxis("L_XAxis_" + playerNum);
+        z = Input.GetAxis("L_YAxis_" + playerNum);
+        _RT = Input.GetAxisRaw("TriggersR_" + playerNum);
+        _LT = Input.GetAxisRaw("TriggersL_" + playerNum);
+        print(x+" "+z + " " +_LT + " " +_RT);
         movement = Vector3.ClampMagnitude(new Vector3(x, 0, z) * moveSpeed, moveSpeed);
 
 
-        if (Input.GetButton("Charge_" + playerNum) && Time.time >= nextBoost)
+        if (_RT >= .5f && Time.time >= nextBoost)
         {
             impactFX.SetActive(false);
             nextBoost = Time.time + boostCD;
@@ -82,9 +86,9 @@ public class Player_Control : MonoBehaviour
             sweatyCD.gameObject.SetActive(false);
             charging = false;
         }
-        if(Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetButtonDown("Start_" + playerNum));
         {
-            AM.Pause();
+            //AM.Pause();
         }
         AC.SetFloat("Speed", movement.magnitude);
 

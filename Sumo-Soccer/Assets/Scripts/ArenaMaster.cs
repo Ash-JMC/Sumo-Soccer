@@ -39,7 +39,7 @@ public class ArenaMaster : MonoBehaviour
 
     private void CheckInput()
     {
-        if (Input.GetKeyUp(KeyCode.R))
+        if (Input.GetButtonDown("Back_1"))
         {
             Reload(true);
         }
