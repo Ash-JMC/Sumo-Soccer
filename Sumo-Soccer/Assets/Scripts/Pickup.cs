@@ -34,7 +34,7 @@ public class Pickup : MonoBehaviour
         }
     }
 
-    void OnTriggerEnter(Collider col)
+    void OnTriggerStay(Collider col)
     {
         if(col.tag == "Player" && active)
         {

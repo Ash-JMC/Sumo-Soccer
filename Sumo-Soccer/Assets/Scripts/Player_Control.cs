@@ -16,6 +16,7 @@ public class Player_Control : MonoBehaviour
     public bool freeze = true, leftTeam, charging = false;
     [HideInInspector]
     public ArenaMaster AM;
+    public Player_Control allyPC;
 
     private Rigidbody rb;
     private float nextBoost, trailLife, x, z, _LT, _RT;
@@ -41,9 +42,7 @@ public class Player_Control : MonoBehaviour
 
     void Update()
     {
-        if(!freeze) { GetInput();}
-        else AC.SetFloat("Speed", 0);
-
+        GetInput();
 
     }
 
@@ -56,41 +55,56 @@ public class Player_Control : MonoBehaviour
     private void GetInput()
     {
         //int inputNum = playerNum + 1;
-        x = Input.GetAxis("L_XAxis_" + playerNum);
-        z = Input.GetAxis("L_YAxis_" + playerNum);
-        _RT = Input.GetAxisRaw("TriggersR_" + playerNum);
-        _LT = Input.GetAxisRaw("TriggersL_" + playerNum);
-        print(x+" "+z + " " +_LT + " " +_RT);
-        movement = Vector3.ClampMagnitude(new Vector3(x, 0, z) * moveSpeed, moveSpeed);
+        if (!freeze)
+        {
+            x = Input.GetAxis("L_XAxis_" + playerNum);
+            z = Input.GetAxis("L_YAxis_" + playerNum);
+            _RT = Input.GetAxisRaw("TriggersR_" + playerNum);
+            _LT = Input.GetAxisRaw("TriggersL_" + playerNum);
+            movement = Vector3.ClampMagnitude(new Vector3(x, 0, z) * moveSpeed, moveSpeed);
 
 
-        if (_RT >= .5f && Time.time >= nextBoost)
-        {
-            impactFX.SetActive(false);
-            nextBoost = Time.time + boostCD;
-            rb.AddForce(transform.forward * (boostSpeed * (rb.mass / 2)), ForceMode.Impulse);
-            trailLife = 0.3f;
-            sweatyCD.gameObject.SetActive(true);
-            charging = true;
-            AC.SetTrigger("Charge");
-           // AC.ResetTrigger("Charge");
+            if (_RT >= .5f && Time.time >= nextBoost)
+            {
+                impactFX.SetActive(false);
+                nextBoost = Time.time + boostCD;
+                rb.AddForce(transform.forward * (boostSpeed * (rb.mass / 2)), ForceMode.Impulse);
+                trailLife = 0.3f;
+                sweatyCD.gameObject.SetActive(true);
+                charging = true;
+                AC.SetTrigger("Charge");
+                // AC.ResetTrigger("Charge");
+            }
+            if (trailLife > 0f)
+            {
+                tr.time = trailLife;
+                trailLife = Mathf.Clamp(trailLife - Time.deltaTime * .75f, 0f, trailLife);
+
+            }
+            else if (Time.time >= nextBoost && sweatyCD.gameObject.activeSelf)
+            {
+                sweatyCD.gameObject.SetActive(false);
+                charging = false;
+            }
+            AC.SetFloat("Speed", movement.magnitude);
         }
-        if (trailLife > 0f)
+        else
         {
-            tr.time = trailLife;
-            trailLife = Mathf.Clamp(trailLife - Time.deltaTime * .75f, 0f, trailLife);
-            
+            AC.SetFloat("Speed", 0);
         }
-        else if (Time.time >= nextBoost && sweatyCD.gameObject.activeSelf)
+        if (Input.GetButtonDown("Start_" + playerNum))
         {
-            sweatyCD.gameObject.SetActive(false);
-            charging = false;
+            if (Time.timeScale == 1)
+            {
+                AM.Pause();
+            }
+            else
+            {
+                AM.UnPause();
+            }
+
         }
-        if (Input.GetButtonDown("Start_" + playerNum));
-        {
-            //AM.Pause();
-        }
-        AC.SetFloat("Speed", movement.magnitude);
+
 
     }
     private void Move()
@@ -109,7 +123,31 @@ public class Player_Control : MonoBehaviour
     {
         if(col.gameObject.tag == "OutZone")
         {
-            AM.Scored(!leftTeam);
+            if(AM.playerCount == 4)
+            {
+                if(leftTeam)
+                {
+                    AM.leftOut++;
+                    if(AM.leftOut >= 2)
+                    {
+                        AM.Scored(!leftTeam);
+                        print("Left out");
+                    }
+                }
+                else
+                {
+                    AM.rightOut++;
+                    if (AM.rightOut >= 2)
+                    {
+                        AM.Scored(!leftTeam);
+                        print("Right out");
+                    }
+                }
+                print("Player out");
+                freeze = true;
+            }
+            else { AM.Scored(!leftTeam); }
+            
         }
     }
     void OnCollisionEnter(Collision col)

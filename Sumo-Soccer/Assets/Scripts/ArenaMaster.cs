@@ -19,6 +19,7 @@ public class ArenaMaster : MonoBehaviour
     public Goals goal_Left, goal_Right;
     public GameObject pauseMenu, winMenu;
     public Pickup[] Pickups;
+    public float leftOut, rightOut;
 
     private bool gameOver = false;
 
@@ -101,6 +102,8 @@ public class ArenaMaster : MonoBehaviour
     }
     public void Scored(bool leftTeam)
     {
+        leftOut = 0;
+        rightOut = 0;
         if(leftTeam)
         {
             score_Left++;
